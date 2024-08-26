@@ -50,9 +50,16 @@ ROBOTSTXT_OBEY = True
 
 # Enable or disable downloader middlewares
 # See https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
-#DOWNLOADER_MIDDLEWARES = {
-#    "chocolatescraper.middlewares.ChocolatescraperDownloaderMiddleware": 543,
-#}
+DOWNLOADER_MIDDLEWARES = {
+
+    ## Rotating User Agents
+    'scrapy.downloadermiddlewares.useragent.UserAgentMiddleware': None,
+    'scrapy_user_agents.middlewares.RandomUserAgentMiddleware': 400,
+
+    ## Rotating Free Proxies
+    # 'scrapy_proxy_pool.middlewares.ProxyPoolMiddleware': 610,
+    # 'scrapy_proxy_pool.middlewares.BanDetectionMiddleware': 620,
+}
 
 # Enable or disable extensions
 # See https://docs.scrapy.org/en/latest/topics/extensions.html
@@ -95,4 +102,8 @@ FEED_EXPORT_ENCODING = "utf-8"
 ITEM_PIPELINES = {
     'chocolatescraper.pipelines.PriceToUSDPipeline': 100,
     'chocolatescraper.pipelines.DuplicatesPipeline': 200,
+    # 'chocolatescraper.pipelines.SavingToMySQLPipeline': 300,
+    # 'chocolatescraper.pipelines.SavingToPostgresPipeline': 300,
+
+
 }

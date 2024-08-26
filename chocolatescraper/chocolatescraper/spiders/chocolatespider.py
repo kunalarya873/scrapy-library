@@ -1,8 +1,16 @@
-
+import os
+from urllib.parse import urlencode
+from dotenv import load_dotenv
 import scrapy
 from chocolatescraper.itemloaders import ChocolateProductLoader
 from chocolatescraper.items import ChocolateProduct  
+load_dotenv()
 
+API_KEY = os.environ.get("API_KEY")
+
+def get_proxy_url(url):
+    payload = {'api_key': API_KEY, 'url': url}
+    return f'http://api.scraperapi.com/?{urlencode(payload)}'
  
 class ChocolateSpider(scrapy.Spider):
 
@@ -10,7 +18,10 @@ class ChocolateSpider(scrapy.Spider):
    name = 'chocolatespider'
 
    # These are the urls that we will start scraping
-   start_urls = ['https://www.chocolate.co.uk/collections/all']
+   def start_requests(self):
+        start_url = 'https://www.chocolate.co.uk/collections/all'
+        yield scrapy.Request(url=get_proxy_url(start_url), callback=self.parse)
+
 
    def parse(self, response):
       products = response.css('product-item')
@@ -26,8 +37,7 @@ class ChocolateSpider(scrapy.Spider):
 
       if next_page is not None:
          next_page_url = f'https://www.chocolate.co.uk{next_page}'
-         yield response.follow(next_page_url, callback=self.parse)
-           
+         yield response.follow(get_proxy_url(next_page_url), callback=self.parse)           
 
 
 #scrapy crawl chocolatespider -O data.json
